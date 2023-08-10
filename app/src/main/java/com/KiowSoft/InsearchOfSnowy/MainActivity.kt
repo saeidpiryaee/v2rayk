@@ -2,10 +2,16 @@ package com.KiowSoft.InsearchOfSnowy
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.appodeal.ads.Appodeal
+import java.lang.Boolean
+import kotlin.Int
+
+
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,9 +19,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var scoreTextView: TextView
     private val PREFS_NAME = "MyPrefs"
     private val SCORE_KEY = "score"
+    val DEBUG = Boolean.parseBoolean("true")
+    val APPLICATION_ID = "com.appodealstack.demo"
+    val BUILD_TYPE = "debug"
+    val VERSION_CODE = 1
+    val VERSION_NAME = "1.0"
+
+    // Field from default config.
+    val APP_KEY = "d908f77a97ae0993514bc8edba7e776a36593c77e5f44994"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Appodeal.initialize(this, "d908f77a97ae0993514bc8edba7e776a36593c77e5f44994", Appodeal.REWARDED_VIDEO)
+
+
+
+
+
+
         setContentView(R.layout.activity_main)
 
         scoreTextView = findViewById(R.id.scoreTextView)
@@ -34,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         button2.setOnClickListener { }
         button3.setOnClickListener { }
         centerButton.setOnClickListener { }
+
     }
 
     override fun onStop() {
