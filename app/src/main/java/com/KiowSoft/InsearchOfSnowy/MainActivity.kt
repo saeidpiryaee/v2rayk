@@ -10,8 +10,6 @@ import com.appodeal.ads.initializing.ApdInitializationCallback
 import com.appodeal.ads.initializing.ApdInitializationError
 import java.lang.Boolean
 import kotlin.Int
-import kotlin.TODO
-import com.appodeal.ads.RewardedVideoCallbacks
 
 
 
@@ -31,15 +29,15 @@ class MainActivity : AppCompatActivity() {
     val VERSION_NAME = "1.0"
 
     // Field from default config.
-    val APP_KEY = "d908f77a97ae0993514bc8edba7e776a36593c77e5f44994"
+    val APP_KEY = "8133866ba0105a2ce930ac403a35c074d95e8dcf2d33c12c"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Appodeal.initialize(this, "d908f77a97ae0993514bc8edba7e776a36593c77e5f44994", Appodeal.REWARDED_VIDEO,
+        Appodeal.initialize(this, "8133866ba0105a2ce930ac403a35c074d95e8dcf2d33c12c", Appodeal.REWARDED_VIDEO,
             object : ApdInitializationCallback {
                 override fun onInitializationFinished(errors: List<ApdInitializationError>?) {
-                    TODO("Not yet implemented")
+
                 }
             }
             )
@@ -63,8 +61,25 @@ class MainActivity : AppCompatActivity() {
         updateScore()
 
         // Set click listeners for buttons (you can add functionality to these buttons if needed)
-        button1.setOnClickListener { }
-        button2.setOnClickListener { }
+        button1.setOnClickListener {
+
+            if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
+                // Show the rewarded video ad
+                Appodeal.show(this, Appodeal.REWARDED_VIDEO)
+            } else {
+                // Handle the case when the ad is not loaded
+            }
+        }
+        button2.setOnClickListener {
+
+            // Check if the rewarded video ad is loaded
+            if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
+                // Show the rewarded video ad
+                Appodeal.show(this, Appodeal.REWARDED_VIDEO)
+            } else {
+                // Handle the case when the ad is not loaded
+            }
+        }
         button3.setOnClickListener { }
         centerButton.setOnClickListener { }
 
