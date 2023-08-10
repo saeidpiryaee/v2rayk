@@ -6,8 +6,13 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.appodeal.ads.Appodeal
+import com.appodeal.ads.initializing.ApdInitializationCallback
+import com.appodeal.ads.initializing.ApdInitializationError
 import java.lang.Boolean
 import kotlin.Int
+import kotlin.TODO
+import com.appodeal.ads.RewardedVideoCallbacks
+
 
 
 
@@ -31,7 +36,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Appodeal.initialize(this, "d908f77a97ae0993514bc8edba7e776a36593c77e5f44994", Appodeal.REWARDED_VIDEO)
+        Appodeal.initialize(this, "d908f77a97ae0993514bc8edba7e776a36593c77e5f44994", Appodeal.REWARDED_VIDEO,
+            object : ApdInitializationCallback {
+                override fun onInitializationFinished(errors: List<ApdInitializationError>?) {
+                    TODO("Not yet implemented")
+                }
+            }
+            )
 
 
 
