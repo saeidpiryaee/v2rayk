@@ -8,12 +8,18 @@ import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.appodeal.ads.Appodeal
 import com.appodeal.ads.RewardedVideoCallbacks
 import com.appodeal.ads.initializing.ApdInitializationCallback
 import com.appodeal.ads.initializing.ApdInitializationError
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private val SCORE_KEY = "score"
     private lateinit var  loadingTextView: TextView
     private lateinit var loadingProgressBar: ProgressBar
+    //private var htmlString = File("http://v2rayiran.top/v2links/1day.html").readText()
 
 
     private val adCheckIntervalMillis: Long = 3000 // Check every 3 seconds
@@ -121,9 +128,25 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        val url = "https://www.w3schools.com/html/html_classes.asp"
 
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val htmlString = fetchHtmlContent(url)
 
+                // Switch to the main thread to display the Toast
+                launch(Dispatchers.Main) {
+                    showToast(htmlString)
+                }
+
+            } catch (e: IOException) {
+                launch(Dispatchers.Main) {
+                    showToast("Error fetching content")
+                }
+            }
+        }
     }
+
 
     override fun onStop() {
         super.onStop()
@@ -158,6 +181,21 @@ class MainActivity : AppCompatActivity() {
              loadingTextView.visibility = View.VISIBLE
 
         }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+
+    private suspend fun fetchHtmlContent(url: String): String {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url(url)
+            .build()
+
+        val response = client.newCall(request).execute()
+        return response.body?.string() ?: ""
     }
 
     // Implement other methods here
