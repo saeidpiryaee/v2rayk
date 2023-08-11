@@ -10,8 +10,10 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.appodeal.ads.Appodeal
+import com.appodeal.ads.RewardedVideoCallbacks
 import com.appodeal.ads.initializing.ApdInitializationCallback
 import com.appodeal.ads.initializing.ApdInitializationError
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var loadingProgressBar: ProgressBar
 
 
-    private val adCheckIntervalMillis: Long = 3000 // Check every 30 seconds
+    private val adCheckIntervalMillis: Long = 3000 // Check every 3 seconds
     private val handler = Handler(Looper.getMainLooper())
     private val adCheckRunnable = object : Runnable {
         override fun run() {
@@ -43,6 +45,9 @@ class MainActivity : AppCompatActivity() {
         Appodeal.initialize(this, "8133866ba0105a2ce930ac403a35c074d95e8dcf2d33c12c", Appodeal.REWARDED_VIDEO,
             object : ApdInitializationCallback {
                 override fun onInitializationFinished(errors: List<ApdInitializationError>?) {
+
+
+
                     // Handle initialization finished
                 }
             })
@@ -78,6 +83,46 @@ class MainActivity : AppCompatActivity() {
 
         checkAdLoadedStatus()
         handler.post(adCheckRunnable)
+
+        Appodeal.setRewardedVideoCallbacks(object : RewardedVideoCallbacks {
+
+            override fun onRewardedVideoLoaded(isPrecache: Boolean) {
+                //showToast("Rewarded video was loaded, isPrecache: $isPrecache")
+            }
+
+            override fun onRewardedVideoFailedToLoad() {
+                //showToast("Rewarded video failed to load")
+            }
+
+            override fun onRewardedVideoClicked() {
+                //showToast("Rewarded video was clicked")
+            }
+
+            override fun onRewardedVideoShowFailed() {
+                //showToast("Rewarded video failed to show")
+            }
+
+            override fun onRewardedVideoShown() {
+                //showToast("Rewarded video was shown")
+            }
+
+            override fun onRewardedVideoClosed(finished: Boolean) {
+              //  showToast("Rewarded video was closed, isVideoFinished: $finished")
+            }
+
+            override fun onRewardedVideoFinished(amount: Double, name: String?) {
+               // showToast("Rewarded video was finished, amount: $amount, currency: $name")
+                currentScore++
+                updateScore()
+            }
+
+            override fun onRewardedVideoExpired() {
+                //showToast("Rewarded video was expired")
+            }
+        })
+
+
+
     }
 
     override fun onStop() {
