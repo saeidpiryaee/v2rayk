@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.appodeal.ads.Appodeal
@@ -22,6 +23,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var centerButton: Button
     private val PREFS_NAME = "MyPrefs"
     private val SCORE_KEY = "score"
+    private lateinit var  loadingTextView: TextView
+    private lateinit var loadingProgressBar: ProgressBar
+
 
     private val adCheckIntervalMillis: Long = 3000 // Check every 30 seconds
     private val handler = Handler(Looper.getMainLooper())
@@ -48,6 +52,9 @@ class MainActivity : AppCompatActivity() {
         button2 = findViewById(R.id.button2)
         button3 = findViewById(R.id.button3)
         centerButton = findViewById(R.id.centerButton)
+        loadingTextView = findViewById(R.id.loadingTextView)
+        loadingProgressBar = findViewById(R.id.loadingProgressBar)
+
 
         // Restore the saved score
         val prefs: SharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
