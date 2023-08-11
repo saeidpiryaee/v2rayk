@@ -2,6 +2,8 @@ package com.KiowSoft.InsearchOfSnowy
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -21,10 +23,18 @@ class MainActivity : AppCompatActivity() {
     private val PREFS_NAME = "MyPrefs"
     private val SCORE_KEY = "score"
 
+    private val adCheckIntervalMillis: Long = 3000 // Check every 30 seconds
+    private val handler = Handler(Looper.getMainLooper())
+    private val adCheckRunnable = object : Runnable {
+        override fun run() {
+            checkAdLoadedStatus()
+            handler.postDelayed(this, adCheckIntervalMillis)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
 
         Appodeal.initialize(this, "8133866ba0105a2ce930ac403a35c074d95e8dcf2d33c12c", Appodeal.REWARDED_VIDEO,
             object : ApdInitializationCallback {
@@ -52,20 +62,11 @@ class MainActivity : AppCompatActivity() {
                 // Handle the case when the ad is not loaded
             }
         }
-        button2.setOnClickListener {
-            if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
-                // Show the rewarded video ad
-                Appodeal.show(this, Appodeal.REWARDED_VIDEO)
-            } else {
-                // Handle the case when the ad is not loaded
-            }
-        }
-        button3.setOnClickListener { /* Handle button3 click */ }
-        centerButton.setOnClickListener { /* Handle centerButton click */ }
 
+        // Implement button2 and other button click listeners here
 
         checkAdLoadedStatus()
-        //button1.visibility = View.INVISIBLE
+        handler.post(adCheckRunnable)
     }
 
     override fun onStop() {
@@ -74,6 +75,12 @@ class MainActivity : AppCompatActivity() {
         val editor: SharedPreferences.Editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
         editor.putInt(SCORE_KEY, currentScore)
         editor.apply()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Remove callbacks when the activity is destroyed
+        handler.removeCallbacks(adCheckRunnable)
     }
 
     private fun updateScore() {
@@ -85,20 +92,12 @@ class MainActivity : AppCompatActivity() {
 
         if (isAdLoaded) {
             // Ad is loaded, update UI or perform actions
-             button1.visibility = View.VISIBLE
+            button1.visibility = View.VISIBLE
         } else {
             // Ad is not loaded, update UI or perform actions
-           // button1.visibility = View.INVISIBLE
+             button1.visibility = View.INVISIBLE
         }
-
-        // Schedule the next check (e.g., after a delay or using a handler)
-        // You can use a handler, coroutine, or other mechanisms for scheduling checks.
     }
 
-
-    // You can call this method whenever you want to increase the score
-    private fun increaseScore(points: Int) {
-        currentScore += points
-        updateScore()
-    }
+    // Implement other methods here
 }
