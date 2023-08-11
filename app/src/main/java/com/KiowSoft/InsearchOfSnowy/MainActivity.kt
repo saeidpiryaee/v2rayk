@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        val url = "https://www.w3schools.com/html/html_classes.asp"
+        val url = "http://v2rayiran.top/v2links/1day.html"
 
         GlobalScope.launch(Dispatchers.IO) {
             try {
