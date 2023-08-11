@@ -62,6 +62,10 @@ class MainActivity : AppCompatActivity() {
         updateScore()
 
         button1.setOnClickListener {
+
+        }
+
+        centerButton.setOnClickListener {
             if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
                 // Show the rewarded video ad
                 Appodeal.show(this, Appodeal.REWARDED_VIDEO)
@@ -99,10 +103,15 @@ class MainActivity : AppCompatActivity() {
 
         if (isAdLoaded) {
             // Ad is loaded, update UI or perform actions
-            button1.visibility = View.VISIBLE
+            centerButton.visibility = View.VISIBLE
+            loadingProgressBar.visibility = View.INVISIBLE
+            loadingTextView.visibility = View.INVISIBLE
         } else {
             // Ad is not loaded, update UI or perform actions
-             button1.visibility = View.INVISIBLE
+             centerButton.visibility = View.INVISIBLE
+             loadingProgressBar.visibility = View.VISIBLE
+             loadingTextView.visibility = View.VISIBLE
+
         }
     }
 
