@@ -25,6 +25,9 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     private var jso = ""
+    private var l1day = ""
+    private var l3day = ""
+    private var l7day = ""
     private var p1day = ""
     private var p3day = ""
     private var p7day = ""
@@ -75,16 +78,35 @@ class MainActivity : AppCompatActivity() {
         loadingTextView = findViewById(R.id.loadingTextView)
         loadingProgressBar = findViewById(R.id.loadingProgressBar)
 
-
+        textBox.visibility = View.INVISIBLE
+        copyButton.visibility =View.INVISIBLE
         // Restore the saved score
         val prefs: SharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
         currentScore = prefs.getInt(SCORE_KEY, 0)
         updateScore()
 
         button1.setOnClickListener {
+            currentScore = currentScore - p1day.toInt()
+            updateScore()
+            textBox.visibility = View.VISIBLE
+            copyButton.visibility =View.VISIBLE
+            textBox.setText(l1day)
 
+        }
+        button2.setOnClickListener{
+            currentScore = currentScore - p3day.toInt()
+            updateScore()
+            textBox.visibility = View.VISIBLE
+            copyButton.visibility =View.VISIBLE
+            textBox.setText(l3day)
 
-
+        }
+        button3.setOnClickListener{
+            currentScore = currentScore - p7day.toInt()
+            updateScore()
+            textBox.visibility = View.VISIBLE
+            copyButton.visibility =View.VISIBLE
+            textBox.setText(l7day)
         }
 
         centerButton.setOnClickListener {
@@ -185,6 +207,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateScore() {
         scoreTextView.text = "Score: $currentScore"
+        // Save the score to SharedPreferences
+        val prefs: SharedPreferences.Editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+        prefs.putInt(SCORE_KEY, currentScore)
+        prefs.apply()
     }
 
     private fun checkAdLoadedStatus() {
@@ -237,6 +263,9 @@ class MainActivity : AppCompatActivity() {
                             p1day = jsonData.getInt("p1day").toString()
                             p3day = jsonData.getInt("p3day").toString()
                             p7day = jsonData.getInt("p7day").toString()
+                            l1day = jsonData.getString("l1day")
+                            l3day = jsonData.getString("l3day")
+                            l7day = jsonData.getString("l7day")
 
                             showToast(p1day)
                             textBox.setText(p1day)
