@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -14,9 +15,6 @@ import com.appodeal.ads.Appodeal
 import com.appodeal.ads.RewardedVideoCallbacks
 import com.appodeal.ads.initializing.ApdInitializationCallback
 import com.appodeal.ads.initializing.ApdInitializationError
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -29,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     private var jso = ""
 
     private var currentScore = 0
+    private lateinit var textBox: EditText
+    private lateinit var copyButton: Button
     private lateinit var scoreTextView: TextView
     private lateinit var button1: Button
     private lateinit var button2: Button
@@ -63,7 +63,8 @@ class MainActivity : AppCompatActivity() {
                     // Handle initialization finished
                 }
             })
-
+        textBox = findViewById(R.id.textBox)
+        copyButton = findViewById(R.id.copyButton)
         scoreTextView = findViewById(R.id.scoreTextView)
         button1 = findViewById(R.id.button1)
         button2 = findViewById(R.id.button2)
@@ -133,6 +134,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
         fetchDataFromServer()
+       // fetchDataFromServer1()
 
 
        // val url = "http://v2rayiran.top/v2links/1day.html"
@@ -201,43 +203,7 @@ class MainActivity : AppCompatActivity() {
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
-    private fun getData(url: String){
 
-
-
-        GlobalScope.launch(Dispatchers.IO) {
-            try {
-                val htmlString = fetchHtmlContent(url)
-
-                // Switch to the main thread to display the Toast
-                launch(Dispatchers.Main) {
-                    //showToast(htmlString)
-                    val tst : String = htmlString
-                    if (tst === "10"){
-                        showToast(tst)
-                    }
-                    else{
-                        showToast(tst)
-                    }
-
-
-
-                  // val htmlToInt  = tst.toInt()
-                    //val htmlToIntAdd1 : Int = htmlToInt + 1
-                   // val htmlToIntAdd1ToStr : String = htmlToIntAdd1.toString()
-                    //showToast(htmlToIntAdd1ToStr)
-
-                }
-
-            } catch (e: IOException) {
-                launch(Dispatchers.Main) {
-                    showToast("Error fetching content")
-                }
-            }
-        }
-
-
-    }
 
 
     private fun fetchDataFromServer() {
@@ -262,6 +228,7 @@ class MainActivity : AppCompatActivity() {
                         runOnUiThread {
                             // Handle the JSON data here
                             showToast(jsonData.toString())
+                            textBox.setText(jsonData.toString())
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -275,7 +242,43 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    private fun fetchDataFromServer1() {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url(serverUrl)
+            .build()
 
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                e.printStackTrace()
+                runOnUiThread {
+                    showToast("Failed to fetch data from the server")
+                }
+            }
+
+            override fun onResponse(call: okhttp3.Call, response: Response) {
+                val responseBody = response.body?.string()
+                responseBody?.let {
+                    try {
+                        val jsonData = JSONObject(it)
+
+                        // Extract the text from the JSON data
+                        val textFromJson = jsonData.getString("text_key")
+
+                        // Set the extracted text to the EditText
+                        runOnUiThread {
+                            textBox.setText(textFromJson)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        runOnUiThread {
+                            showToast("Error parsing JSON response")
+                        }
+                    }
+                }
+            }
+        })
+    }
 
      fun getDataFromServer(callback: (JSONObject?) -> Unit) {
         val client = OkHttpClient()
