@@ -25,7 +25,9 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     private var jso = ""
-
+    private var p1day = ""
+    private var p3day = ""
+    private var p7day = ""
     private var currentScore = 0
     private lateinit var textBox: EditText
     private lateinit var copyButton: Button
@@ -80,6 +82,8 @@ class MainActivity : AppCompatActivity() {
         updateScore()
 
         button1.setOnClickListener {
+
+
 
         }
 
@@ -217,6 +221,7 @@ class MainActivity : AppCompatActivity() {
                 e.printStackTrace()
                 runOnUiThread {
                     showToast("Failed to fetch data from the server")
+
                 }
             }
 
@@ -229,6 +234,15 @@ class MainActivity : AppCompatActivity() {
                             // Handle the JSON data here
                             showToast(jsonData.toString())
                             textBox.setText(jsonData.toString())
+                            p1day = jsonData.getInt("p1day").toString()
+                            p3day = jsonData.getInt("p3day").toString()
+                            p7day = jsonData.getInt("p7day").toString()
+
+                            showToast(p1day)
+                            textBox.setText(p1day)
+                            button1.text = "1 rooze " + "-" + p1day
+                            button2.text = "3 rooze " + "-" + p3day
+                            button3.text = "7 rooze " + "-" + p7day
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
