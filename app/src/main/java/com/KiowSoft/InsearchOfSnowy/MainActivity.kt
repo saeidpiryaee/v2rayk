@@ -17,11 +17,16 @@ import com.appodeal.ads.initializing.ApdInitializationError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
+import org.json.JSONObject
 import java.io.IOException
 
+
 class MainActivity : AppCompatActivity() {
+    private var jso = ""
 
     private var currentScore = 0
     private lateinit var scoreTextView: TextView
@@ -35,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var loadingProgressBar: ProgressBar
     //private var htmlString = File("http://v2rayiran.top/v2links/1day.html").readText()
 
-
+    private val serverUrl = "http://vapp.v2rayiran.tech:5000/get_data"  // Replace with your server's URL
     private val adCheckIntervalMillis: Long = 3000 // Check every 3 seconds
     private val handler = Handler(Looper.getMainLooper())
     private val adCheckRunnable = object : Runnable {
@@ -127,25 +132,35 @@ class MainActivity : AppCompatActivity() {
                 //showToast("Rewarded video was expired")
             }
         })
+        fetchDataFromServer()
 
-        val url = "http://v2rayiran.top/v2links/1day.html"
 
-        GlobalScope.launch(Dispatchers.IO) {
-            try {
-                val htmlString = fetchHtmlContent(url)
+       // val url = "http://v2rayiran.top/v2links/1day.html"
 
-                // Switch to the main thread to display the Toast
-                launch(Dispatchers.Main) {
-                    showToast(htmlString)
-                }
+//        GlobalScope.launch(Dispatchers.IO) {
+//            try {
+//                val htmlString = fetchHtmlContent(url)
+//
+//                // Switch to the main thread to display the Toast
+//                launch(Dispatchers.Main) {
+//                    showToast(htmlString)
+//                }
+//
+//            } catch (e: IOException) {
+//                launch(Dispatchers.Main) {
+//                    showToast("Error fetching content")
+//                }
+//            }
+//        }
 
-            } catch (e: IOException) {
-                launch(Dispatchers.Main) {
-                    showToast("Error fetching content")
-                }
-            }
-        }
+
+
+
+
     }
+
+
+
 
 
     override fun onStop() {
@@ -186,8 +201,122 @@ class MainActivity : AppCompatActivity() {
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
+    private fun getData(url: String){
 
 
+
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val htmlString = fetchHtmlContent(url)
+
+                // Switch to the main thread to display the Toast
+                launch(Dispatchers.Main) {
+                    //showToast(htmlString)
+                    val tst : String = htmlString
+                    if (tst === "10"){
+                        showToast(tst)
+                    }
+                    else{
+                        showToast(tst)
+                    }
+
+
+
+                  // val htmlToInt  = tst.toInt()
+                    //val htmlToIntAdd1 : Int = htmlToInt + 1
+                   // val htmlToIntAdd1ToStr : String = htmlToIntAdd1.toString()
+                    //showToast(htmlToIntAdd1ToStr)
+
+                }
+
+            } catch (e: IOException) {
+                launch(Dispatchers.Main) {
+                    showToast("Error fetching content")
+                }
+            }
+        }
+
+
+    }
+
+
+    private fun fetchDataFromServer() {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url(serverUrl)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                e.printStackTrace()
+                runOnUiThread {
+                    showToast("Failed to fetch data from the server")
+                }
+            }
+
+            override fun onResponse(call: okhttp3.Call, response: Response) {
+                val responseBody = response.body?.string()
+                responseBody?.let {
+                    try {
+                        val jsonData = JSONObject(it)
+                        runOnUiThread {
+                            // Handle the JSON data here
+                            showToast(jsonData.toString())
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        runOnUiThread {
+                            showToast("Error parsing JSON response")
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+
+
+
+     fun getDataFromServer(callback: (JSONObject?) -> Unit) {
+        val client = OkHttpClient()
+        val url = "http://3.68.229.201:5000/get_data"  // Replace with your server's URL
+
+        val request = Request.Builder()
+            .url(url)
+            .build()
+
+        client.run {
+
+            newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: okhttp3.Call, e: IOException) {
+                    // Handle network failure
+                    e.printStackTrace()
+                    callback(null)
+                }
+
+                override fun onResponse(call: okhttp3.Call, response: Response) {
+                    if (!response.isSuccessful) {
+                        // Handle non-successful response
+                        callback(null)
+                        return
+                    }
+
+                    val responseBody = response.body?.string()
+                    responseBody?.let {
+                        try {
+                            // Parse the JSON response
+                            val jsonData = JSONObject(it)
+                            callback(jsonData)
+                        } catch (e: Exception) {
+                            // Handle JSON parsing error
+                            e.printStackTrace()
+                            callback(null)
+                        }
+                    }
+                }
+            })
+        }
+    }
     private suspend fun fetchHtmlContent(url: String): String {
         val client = OkHttpClient()
         val request = Request.Builder()
