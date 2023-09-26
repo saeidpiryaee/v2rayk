@@ -68,6 +68,9 @@ class MainActivity : AppCompatActivity() {
                     // Handle initialization finished
                 }
             })
+        // Enable test mode
+        Appodeal.setTesting(false);
+
         textBox = findViewById(R.id.textBox)
         copyButton = findViewById(R.id.copyButton)
         scoreTextView = findViewById(R.id.scoreTextView)
